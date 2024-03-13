@@ -27,6 +27,7 @@ padToPowerOfTwo = 1
 fixBugs = 0
 ;	| If 1, enables all bug-fixes
 ;	| See also the 'FixDriverBugs' flag in 's2.sounddriver.asm'
+;	| See also the 'FixMusicAndSFXDataBugs' flag in 'build.lua'
 allOptimizations = 0
 ;	| If 1, enables all optimizations
 ;
@@ -64,6 +65,7 @@ useFullWaterTables = 0
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Expressing SMPS bytecode in a portable and human-readable form
+FixMusicAndSFXDataBugs = fixBugs
 SonicDriverVer = 2 ; Tell SMPS2ASM that we are targetting Sonic 2's sound driver
 	include "sound/_smps2asm_inc.asm"
 
@@ -33490,11 +33492,11 @@ ChkLoadObj_2P:
 ; ---------------------------------------------------------------------------
 
 +
-	btst	#4,2(a0)	; the bit that's being tested for here should always be zero,
-	beq.s	+		; but assuming it weren't and this branch isn't taken,
-	bsr.w	AllocateObject	; then this object would not be loaded into one of the 12
-	bne.s	return_17FD8	; byte blocks after Dynamic_Object_RAM_2P_End and would most
-	bra.s	ChkLoadObj_2P_LoadData	; likely end up somwhere before this in Dynamic_Object_RAM
+	btst	#4,2(a0)
+	beq.s	+			; if this branch isn't taken, then this object would
+	bsr.w	AllocateObject		; not be loaded into one of the 12 byte blocks after
+	bne.s	return_17FD8		; Dynamic_Object_RAM_2P_End and would most likely end
+	bra.s	ChkLoadObj_2P_LoadData	; up somewhere before this in Dynamic_Object_RAM
 ; ---------------------------------------------------------------------------
 
 +
@@ -91258,12 +91260,12 @@ ArtNem_CNZMiniBumper:		BINCLUDE	"art/nemesis/Drop target from CNZ.nem" ; Weird b
 	even
 ArtNem_CNZFlipper:		BINCLUDE	"art/nemesis/Flippers.nem"
 	even
-ArtNem_CPZElevator:		BINCLUDE	"art/nemesis/Large moving platform from CNZ.nem"
-	even
 
 ;---------------------------------------------------------------------------------------
 ; CPZ Assets
 ;---------------------------------------------------------------------------------------
+ArtNem_CPZElevator:		BINCLUDE	"art/nemesis/Large moving platform from CPZ.nem"
+	even
 ArtNem_WaterSurface:		BINCLUDE	"art/nemesis/Top of water in HPZ and CNZ.nem"
 	even
 ArtNem_CPZBooster:		BINCLUDE	"art/nemesis/Speed booster from CPZ.nem"
@@ -91296,22 +91298,17 @@ ArtNem_ARZBarrierThing:		BINCLUDE	"art/nemesis/One way barrier from ARZ.nem" ; U
 	even
 
 ;---------------------------------------------------------------------------------------
-; EHZ Badnik Assets (Part 1) (Why is this split?)
+; EHZ/OOZ Badnik Assets
 ;---------------------------------------------------------------------------------------
+; These Badniks being grouped together here is unusual, but can be explained by two things:
+; 1. This is where all Badnik tiles were kept in the earliest prototypes.
+; 2. These are the only Badniks left from those prototypes.
 ArtNem_Buzzer:			BINCLUDE	"art/nemesis/Buzzer enemy.nem"
 	even
-
-;---------------------------------------------------------------------------------------
-; OOZ Badnik Assets
-;---------------------------------------------------------------------------------------
 ArtNem_Octus:			BINCLUDE	"art/nemesis/Octopus badnik from OOZ.nem"
 	even
 ArtNem_Aquis:			BINCLUDE	"art/nemesis/Seahorse from OOZ.nem"
 	even
-
-;---------------------------------------------------------------------------------------
-; EHZ Badnik Assets (Part 2) (Why?)
-;---------------------------------------------------------------------------------------
 ArtNem_Masher:			BINCLUDE	"art/nemesis/EHZ Pirahna badnik.nem"
 	even
 
@@ -91374,7 +91371,7 @@ ArtNem_Turtloid:		BINCLUDE	"art/nemesis/Turtle badnik from SCZ.nem"
 	even
 
 ;---------------------------------------------------------------------------------------
-; EHZ Badnik Assets (Part 3) (WTF???)
+; EHZ Badnik Assets (again)
 ;---------------------------------------------------------------------------------------
 ArtNem_Coconuts:		BINCLUDE	"art/nemesis/Coconuts badnik from EHZ.nem"
 	even
